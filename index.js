@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 require('dotenv').config()
 const port = process.env.PORT || 5000
@@ -30,6 +30,34 @@ async function run() {
         app.post('/posts', async (req, res) => {
             const post = req.body
             const result = await postsCollection.insertOne(post)
+            res.send(result)
+        })
+
+        // get users information
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email
+            const query = { email }
+            const result = await usersCollection.findOne(query)
+            res.send(result)
+        })
+        app.get('/posts', async (req, res) => {
+            //show 3post only
+            const queryParam = parseInt(req.query.limit);
+            if (queryParam) {
+                const cursor = postsCollection.find({}).limit(queryParam)
+                const findServices = await cursor.toArray()
+                return res.send(findServices)
+
+            }
+            const query = {}
+            const result = await postsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.get('/posts/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await postsCollection.findOne(query)
             res.send(result)
         })
     }
