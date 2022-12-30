@@ -34,7 +34,7 @@ async function run() {
         })
 
         // get users information
-        app.get('/users/:email', async (req, res) => {
+        app.get('/users', async (req, res) => {
             const email = req.params.email
             const query = { email }
             const result = await usersCollection.findOne(query)
